@@ -4,19 +4,17 @@ import Center from './Center';
 import ProductList from './ProductList';
 import Modal from './Modal';
 import Blinker from './Blinker';
-import UseFetchData from '../hooks/useFetchData'
 import { Category } from '../types';
+import UseFetchData from '../hooks/useFetchData'
 
 interface DataProps {
-  match: {
-    params: {
-      category: Category
-    }
-  }
+  tag: Category
 }
 
-const Inventory: React.FC<DataProps> = ({match:{ params } }) => {
-  const [stocks, products, dataState, setNewDataState] = UseFetchData(params.category);
+const Inventory: React.FC<DataProps> = ({ tag }) => {
+
+  const [stocks, products, dataState, setNewDataState] = UseFetchData(tag);
+
   return (<div>
     {
       dataState === 'pending' &&

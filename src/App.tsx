@@ -1,13 +1,12 @@
 import React from 'react';
 import Inventory from './components/Inventory';
-import NavList from './components/Navbar';
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   NavLink
 } from "react-router-dom";
+import NavList from './components/Navbar';
 
 function App() {
 
@@ -28,8 +27,17 @@ function App() {
           </NavList>
         </nav>
         <Switch>
-          <Route path={`/:category`} component={Inventory}>
-          </Route>
+          <>
+            <Route exact path={`/jackets`}>
+              <Inventory tag="jackets" />
+            </Route>
+            <Route exact path="/shirts">
+              <Inventory tag="shirts" />
+            </Route>
+            <Route exact path="/accessories">
+              <Inventory tag="accessories" />
+            </Route>
+          </>
         </Switch>
       </Router>
     </div>
