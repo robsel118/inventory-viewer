@@ -3,24 +3,19 @@ import Inventory from './components/Inventory';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
 } from "react-router-dom";
 
 function App() {
+
   return (
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/jackets">
-            <Inventory tag="jackets" />
+          <Route path={`/:category`} component={Inventory}>
           </Route>
-          <Route path="/shirts">
-            <Inventory tag="shirts" />
-          </Route>
-          <Route path="/accessories">
-            <Inventory tag="accessories" />
-          </Route>
-          <Route path="/">
+        
+          <Route exact path={`/`}>
             <div>404</div>
           </Route>
         </Switch>

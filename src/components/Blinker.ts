@@ -1,5 +1,4 @@
-import styled, { keyframes } from 'styled-components';
-
+import styled, { keyframes } from "styled-components";
 
 const blinking = keyframes`
   from{
@@ -8,8 +7,10 @@ const blinking = keyframes`
   to{
     opacity: 1;
   }
-`
+`;
+
 const Blinker = styled.div`
   animation: ${blinking} 2s ease-in infinite alternate;
-`
+`;
+
 export default Blinker;
