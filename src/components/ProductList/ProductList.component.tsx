@@ -1,8 +1,7 @@
 import React from 'react';
 import { Product } from '../../types';
-import ProdcutDetails from '../ProductDetails/ProductDetails.component';
+import ProdcutDetails, { Row, RowData } from '../ProductDetails';
 import { Table, Wrapper } from './ProductList.styles'
-import { Row, RowData } from '../ProductDetails/ProductDetails.styles'
 
 interface DataProps {
   products: Product[]
@@ -27,6 +26,7 @@ const ProductList: React.FC<DataProps> = ({ stocks, products }) => {
           </Row>
           {
             products
+              .filter(product => product.id in stocks)
               .map((product) => {
                 return (<ProdcutDetails
                   key={product.id}

@@ -1,89 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import ProductList from './ProductList/ProductList.component';
-import Center from './Center';
+import React from 'react';
 import { PrimaryButton, SecondaryButton } from './Button';
-import axios, { AxiosResponse } from 'axios';
-import { Product } from '../types';
-import Modal from './Modal/Modal.component';
+import Center from './Center';
+import ProductList from './ProductList';
+import Modal from './Modal';
+import Blinker from './Blinker';
+import { Category } from '../types';
+import UseFetchData from '../hooks/useFetchData'
 
 interface DataProps {
-  tag: 'shirts' | 'jackets' | 'accessories'
+  tag: Category
 }
 
 const Inventory: React.FC<DataProps> = ({ tag }) => {
 
-  const [stocks, setStocks] = useState<Record<string, string>>({});
-  const [products, setProducts] = useState<Product[]>([]);
-  const [dataState, setDataState] = useState<'pending' | 'success' | 'failed' | 'partial'>('pending');
-
-  useEffect(() => {
-    async function fetchContent(): Promise<void> {
-
-      let productList: Product[] = [];
-      let stockList: Record<string, string> = {};
-
-      try {
-
-        productList = await fetchProducts();
-
-        stockList = await fetchStocks(productList);
-        setStocks(stockList);
-        setProducts(productList);
-      } catch (error) {
-        setDataState('failed')
-      }
-    }
-
-    async function fetchProducts(): Promise<Product[]> {
-
-      const res = await axios.get(`https://bad-api-assignment.reaktor.com/products/${tag}`,
-        {
-          headers: { 'Content-Type': 'application/json', 'Cache-Control': `private, max-age=${5 * 60}` }
-        });
-
-      const products: Product[] = res.data;
-
-      return products;
-
-    }
-
-    async function fetchStocks(products: Product[]): Promise<Record<string, string>> {
-
-      const manufacturers = [...(new Set<string>(products.map(d => d.manufacturer)))];
-      const promises = await axios.all<AxiosResponse>(
-        manufacturers.reduce((acc: Promise<AxiosResponse<any>>[], manufacturer) => {
-          return [...acc, axios.get(`https://bad-api-assignment.reaktor.com/availability/${manufacturer}`)];
-        }, [])
-      )
-
-      const validStock = promises
-        .filter(promise =>
-          promise.data.code === 200 &&
-          promise.data.response !== "[]")
-        .map(promise => promise.data.response);
-
-
-      const allFetched = validStock.length === promises.length ? 'success' : 'partial'
-      setDataState(allFetched);
-      const temp = validStock.flat().reduce((acc: Record<string, string>, av) => {
-        acc[av.id.toLowerCase()] = av.DATAPAYLOAD;
-        return acc;
-      }, {});
-
-      return temp
-    }
-    if (dataState === 'pending')
-      fetchContent();
-  }, [tag, dataState])
-
-
-
-
-
+  const [stocks, products, dataState, setNewDataState] = UseFetchData(tag);
 
   return (<div>
     {
-      dataState === 'pending' && <Center>Loading</Center>
+      dataState === 'pending' &&
+      <Center>
+        <Blinker>Loading</Blinker>
+      </Center>
     }
     {
       dataState === 'failed' &&
@@ -94,7 +31,7 @@ const Inventory: React.FC<DataProps> = ({ tag }) => {
           color={'red'}
         >
           <PrimaryButton onClick={() => {
-            setDataState('pending');
+            setNewDataState('pending');
           }}>Retry
               </PrimaryButton>
         </Modal>
@@ -108,9 +45,9 @@ const Inventory: React.FC<DataProps> = ({ tag }) => {
           description={"Some items can already be display, do you wish to show them or do you wish to retry?"}
           color={'red'}
         >
-          <SecondaryButton onClick={() => setDataState('success')}>Show</SecondaryButton>
+          <SecondaryButton onClick={() => setNewDataState('success')}>Show</SecondaryButton>
           <PrimaryButton onClick={() => {
-            setDataState('pending');
+            setNewDataState('pending');
           }}>Retry
               </PrimaryButton>
         </Modal>

@@ -7,3 +7,6 @@ export interface Product{
   manufacturer: string,
   availability: string
 }
+
+export type Category = 'shirts' | 'jackets' | 'accessories';
+
